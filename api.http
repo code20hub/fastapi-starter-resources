@@ -1,0 +1,18 @@
+
+POST http://127.0.0.1:8000/languages
+Content-Type: application/json
+
+{
+    "name": "C++",
+    "type": "INterpreted",
+    "authors": [
+        {"name": "Lele", "section": "Chatpter 1"},
+        {"name": "Mpho", "section": "Foreword"}
+    ]
+}
+
+###
+GET http://127.0.0.1:8000/languages
+
+###
+GET http://127.0.0.1:8000/language/9

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from schemas import Languange, TypeURLChoices
+from schemas import LanguageBase, LanguageID, LanguageCreate, TypeURLChoices, TypeURLChoices
 
 app = FastAPI()
 
@@ -34,9 +34,9 @@ def index() -> dict:
 async def languages(
     type: TypeURLChoices | None = None, 
     has_authors: bool = False
-) -> list[Languange]:
+) -> list[LanguageID]:
     
-	languages_list = [Languange(**lang) for lang in LANGS]
+	languages_list = [LanguageID(**lang) for lang in LANGS]
 
 	if type:
 		languages_list = [lang for lang in languages_list if lang.type.lower() == type.value]
@@ -47,10 +47,10 @@ async def languages(
 	return languages_list
 
 @app.get('/language/{lang_id}')
-async def language(lang_id: int) -> Languange:
+async def language(lang_id: int) -> LanguageID:
     # The second argument (None) prevents an error if the ID doesn't exist
     # returns nex element in the array based on condition, else none
-	language = next((Languange(**lang) for lang in LANGS if lang['id'] == lang_id), None)
+	language = next((LanguageID(**lang) for lang in LANGS if lang['id'] == lang_id), None)
 	if language is None:
 		raise HTTPException(404, detail='Language not found')
 
@@ -59,7 +59,7 @@ async def language(lang_id: int) -> Languange:
 # add simple validation through Enums: useeful, when we do not want to search the datasets for things that do not exists
 # within the dataset; i.e) a whitelisted - reject without even searching the dataset
 @app.get('/langauges/type/{type}')
-async def langauges_by_type(type: TypeURLChoices) -> list[Languange]:
+async def langauges_by_type(type: TypeURLChoices) -> list[LanguageID]:
     return [
         lang for lang in LANGS if lang['type'].lower() == type.value
 	]
