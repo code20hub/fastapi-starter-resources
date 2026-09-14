@@ -1,11 +1,28 @@
+'''
+SQLModel is a wrapper library—built on top of both SQLAlchemy and Pydantic—designed to eliminate duplicate code by letting a single class 
+function as both a database table and a data validation schema.
+
+It is based on Python-typed annotations.
+
+Lisespan Events: used to execute loginc before and after the application starts, execute once at the begining and ending of thee application
+
+'''
 from fastapi import FastAPI, HTTPException, Query, Path, Depends
 from models import (LanguageCreate, LanguageUpdate, Language, Author, TypeURLChoices, LanguageReadWithAuthors)
 from typing import Annotated
-from db import get_session
+from contextlib import asynccontextmanager
+from db import init_db, get_session
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
-app = FastAPI()
+
+# runs once before app start, and after app comcludes/finish
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get('/')
 def index() -> dict:
@@ -96,7 +113,6 @@ async def update_language_full(
     # Replace scalar attributes
     language.name = payload.name
     language.type = payload.type
-    language.date_released = payload.date_released
 
     # Replace relationships: Clear old authors and append new ones
     language.authors.clear()

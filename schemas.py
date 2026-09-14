@@ -34,3 +34,5 @@ class LanguageCreate(LanguageBase):
     @field_validator('type', mode='before')
     def title_case_type(cls, value):
         return value.title()
+    
+
